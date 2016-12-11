@@ -3,51 +3,65 @@
         <!-- 
             Create on: 03/11/2016 21:05
             Author: Danilo da Silva Pereira Mat: 201611250
-            Description: Commit inicial.  
+            Description: Projeto Telegram / Php.  
         -->
-    <title>Api PHP</title>
-    <meta charset="UTF-8">
+	<title>Api PHP</title>
+	<meta charset="UTF-8">
 </head>
 <body>
     <?php
+    require 'DAOFiltro.php';
+    $DAOFiltro = new DAOFiltro();
+    //Token
+    include './token.txt';
 
-    $arquivo = 'storage.txt';
-        $str = file_get_contents($arquivo);
-        $array_updateId = explode( ',' , $str);
-                
-    $url = "https://api.telegram.org/bot242158604:AAHsZgkHuWC4ZBP3eBNTvuX7_eITmIdunys/getUpdates";
+    //Puxando json da url da api
+	$url = "https://api.telegram.org/bot." . $token . "/getUpdates";
     $content = file_get_contents($url);
     $to = json_decode($content,true);
     //Count
     $run = count($to["result"]);
 
-    for($i = 0; $i < $run; $i++){
-        $id = $to["result"][$i]["message"]["chat"]["id"];
-        $text = $to["result"][$i]["message"]["text"];
+	//laco para buscar campos especificos e pô-los numa array
+	for($i = 0; $i < $run; $i++){
+
+		$id = $to["result"][$i]["message"]["chat"]["id"];
         $update_id = $to["result"][$i]["update_id"];
-            
-        $ids[$i] = $id;
-        $texts[$i] = $text; 
-                $updateIds[$i] = $update_id; 
+
+        if(isset($to["result"][$i]["message"]["text"])){
+     	
+     		$text = $to["result"][$i]["message"]["text"];
+			//Arquivo de texto
+	    	$arquivo ='storage.txt';  
+			$str = file_get_contents($arquivo);
+			$array_updateId = explode(',',$str);
+			
                 
-                if(!in_array($updateIds[$i], $array_updateId)){
-                    if($texts[$i] == '/megasena'){
+                //Condicao para responder à msg "/MEGASENA" e guardar dados no banco
+                if(!in_array($update_id, $array_updateId)){
+                    if($text == '/megasena'){
                         
                         $numMegasena = array();
                          // Gerar numeros da megasena
                         for($j = 1; $j <=6;$j++) {
-                            $numMegasena[] = rand(1,60);
+                            $numMegasena[] = rand(1,60); 
                         }
                         sort($numMegasena);
-                        $sena = implode(" - ", $numMegasena);
+                        $sena = implode(" - ", $numMegasena); print "<br>";
   
-                        $new_url = 'https://api.te'
-                                . 'legram.org/bot242158604:AAHsZgkHuWC4ZBP3eBNTvuX7_eITmIdunys/sendMessage?chat_id='.$ids[$i]."&text=$sena";
+                        $new_url = 'https://api.telegram.org/bot242158604:AAHsZgkHuWC4ZBP3eBNTvuX7_eITmIdunys/sendMessage?chat_id='. $id ."&text=$sena";
                         file_get_contents($new_url);
-                        file_put_contents($arquivo, $updateIds[$i].",", FILE_APPEND);   
-                    }
+                        file_put_contents($arquivo, $update_id.",", FILE_APPEND);
+                        
+                    
+                       	$DAOFiltro->inserir($update_id,$text,$sena);
+                   	}
                 }
-        }   
-    ?>
+            }    
+            
+    }	
+
+    
+?>
 </body>
 </html>
