@@ -59,6 +59,16 @@
                 }
             }    
             
+            // Condição para tratar arquivo foto(photo);
+            elseif ($to["result"][$i]["message"]["photo"]) {
+            	$file_id = $to["result"][$i]["message"]["photo"][1]["file_id"];
+             	$resposta_file = file_get_contents("https://api.telegram.org/bot242158604:AAHsZgkHuWC4ZBP3eBNTvuX7_eITmIdunys/getFile?file_id=" . $file_id);
+             	$resultado = json_decode($resposta_file, TRUE);
+             	$file_path = $resultado["result"]['file_path'];
+             	$file = "https://api.telegram.org/file/bot242158604:AAHsZgkHuWC4ZBP3eBNTvuX7_eITmIdunys/" . $file_path;
+             	$new_url = 'https://api.telegram.org/bot242158604:AAHsZgkHuWC4ZBP3eBNTvuX7_eITmIdunys/sendMessage?chat_id='. $id ."&text=PHOTO";
+                file_get_contents($new_url);
+             } 
     }	
 
     
