@@ -12,11 +12,10 @@
     <?php
     require 'DAOFiltro.php';
     $DAOFiltro = new DAOFiltro();
-    //Token
-    include './token.txt';
+    
 
     //Puxando json da url da api
-	$url = "https://api.telegram.org/bot." . $token . "/getUpdates";
+	$url = "https://api.telegram.org/bot242158604:AAHsZgkHuWC4ZBP3eBNTvuX7_eITmIdunys/getUpdates";
     $content = file_get_contents($url);
     $to = json_decode($content,true);
     //Count
